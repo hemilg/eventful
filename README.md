@@ -40,12 +40,38 @@ Clone the repo and use Bun for all tooling (not npm/pnpm):
 
 ```sh
 bun install
+bun run init      # Interactive provisioning wizard (creates D1, KV, R2 resources)
 bun run dev       # Vite dev server with HMR
 bun run build     # SvelteKit production build
 bun run preview   # Build + run under Wrangler (closest to production)
 bun run check     # svelte-check + TypeScript strict mode
 bun run format    # Prettier
 bun run package   # Build src/lib into a publishable package (dist/)
+```
+
+### Initial Setup: `bun run init`
+
+To deploy eventful standalone, you first need to provision Cloudflare resources:
+
+```sh
+bun run init
+```
+
+This interactive wizard will:
+
+1. **Check your Wrangler login** - Ensures you're authenticated with Cloudflare
+2. **Create a D1 database** - Serverless SQL database for event data
+3. **Create a KV namespace** - Edge cache for fast data access
+4. **Create an R2 bucket** - Object storage for event assets
+
+Each step asks for confirmation before creating real resources. The wizard prints the binding IDs
+you need to paste into `wrangler.jsonc`.
+
+After `bun run init`, update `wrangler.jsonc` with the printed binding IDs, then:
+
+```sh
+bun run build     # Compile SvelteKit to Workers
+bun run deploy    # Deploy to Cloudflare
 ```
 
 The standalone app deploys as the `eventful-demo` Cloudflare Worker (see `wrangler.jsonc`) - a
