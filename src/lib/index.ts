@@ -8,3 +8,20 @@ export { D1Client, KVClient } from './db.js';
 export type { KVPutOptions } from './db.js';
 
 export { default as Timeline } from './components/Timeline.svelte';
+
+// EventStore: strongly-typed data persistence with tRPC
+export { eventStoreRouter } from './store/router.js';
+export type { EventStore, EventStoreRouter } from './store/router.js';
+export { createD1EventStore } from './store/d1-adapter.js';
+export {
+	EventLocationSchema,
+	ScheduleBlockSchema,
+	ParticipantSchema,
+	EventDataSchema
+} from './store/schema.js';
+export type {
+	EventLocationZod,
+	ScheduleBlockZod,
+	ParticipantZod,
+	EventDataZod
+} from './store/schema.js';
