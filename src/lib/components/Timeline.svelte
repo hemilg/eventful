@@ -2,7 +2,7 @@
 	// TODO: this is the "live happening now" timeline only. A day-by-day
 	// Gantt/calendar-style view is a deliberate follow-up — see TODO.md.
 
-	import { Tween, Spring } from 'svelte/motion';
+	import { Tween, Spring, prefersReducedMotion } from 'svelte/motion';
 	import { HIGHLIGHT_SPRING } from '../motion.js';
 	import type { ScheduleBlock } from '../types.js';
 
@@ -47,21 +47,32 @@
 	// The highlight marker's horizontal position (0-1 fraction), animated
 	// with a Tween so it glides between blocks instead of jumping.
 	// `Tween` is SSR-safe: it just holds a value until the browser animates it.
+	// Respects prefers-reduced-motion by skipping animation when enabled.
 	const markerPosition = new Tween(0, { duration: 400, easing: (t) => t * (2 - t) });
 
 	$effect(() => {
-		markerPosition.target = currentBlock ? fractionFor(currentBlock.startTime) : 0;
+		const target = currentBlock ? fractionFor(currentBlock.startTime) : 0;
+		if (prefersReducedMotion.current) {
+			markerPosition.set(target, { duration: 0 });
+		} else {
+			markerPosition.target = target;
+		}
 	});
 
 	// Highlight "pulse" scale, driven by a Spring for a subtle organic feel.
+	// Skips animation if user prefers reduced motion.
 	const highlightScale = new Spring(1, HIGHLIGHT_SPRING);
 
 	$effect(() => {
 		// Nudge the scale on block change to draw attention; the spring
 		// settles back to 1 on its own thanks to its target/damping.
 		currentBlock;
-		highlightScale.set(1.08, { instant: true });
-		highlightScale.target = 1;
+		if (prefersReducedMotion.current) {
+			highlightScale.set(1, { instant: true });
+		} else {
+			highlightScale.set(1.08, { instant: true });
+			highlightScale.target = 1;
+		}
 	});
 </script>
 
