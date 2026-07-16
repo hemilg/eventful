@@ -1,0 +1,32 @@
+/**
+ * For more details on how to configure Wrangler, refer to:
+ * https://developers.cloudflare.com/workers/wrangler/configuration/
+ *
+ * This config is for the "eventful-demo" Worker - a minimal standalone
+ * deployment target for developing/demoing this library. It is not a
+ * customer-facing production site, so no custom routes/domains are
+ * configured here. Consumers embedding eventful in their own app will
+ * bring their own wrangler.jsonc.
+ */
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "eventful-demo",
+	"main": ".svelte-kit/cloudflare/_worker.js",
+	"compatibility_date": "2026-07-01",
+	"assets": {
+		"binding": "ASSETS",
+		"directory": ".svelte-kit/cloudflare"
+	},
+	"observability": {
+		"enabled": true
+	}
+	/**
+	 * No "routes" configured - this demo Worker deploys to the default
+	 * workers.dev subdomain until/unless a custom domain is needed.
+	 */
+	/**
+	 * Bindings (D1/KV) will be added here as the library's storage
+	 * helpers are wired up for the demo app.
+	 * https://developers.cloudflare.com/workers/runtime-apis/bindings/
+	 */
+}
