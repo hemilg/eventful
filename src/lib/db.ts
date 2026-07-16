@@ -37,6 +37,16 @@ export class D1Client {
 		return stmt.run();
 	}
 
+	/** Prepare a query statement for use with `batch()` or standalone execution. */
+	prepare(query: string): D1PreparedStatement {
+		return this.db.prepare(query);
+	}
+
+	/** Execute multiple prepared statements atomically (or near-atomically on D1). */
+	async batch(statements: D1PreparedStatement[]): Promise<D1Result[]> {
+		return this.db.batch(statements);
+	}
+
 	/** Access the underlying binding directly for anything these helpers don't cover. */
 	get raw(): D1Database {
 		return this.db;
@@ -84,6 +94,41 @@ export class KVClient<T = unknown> {
 
 	async delete(key: string): Promise<void> {
 		await this.kv.delete(key);
+	}
+
+	/** Get multiple JSON values in parallel, returning a record of key → value (null if absent). */
+	async getManyJSON(keys: string[]): Promise<Record<string, T | null>> {
+		const results = await Promise.all(keys.map((key) => this.getJSON(key)));
+		const record: Record<string, T | null> = {};
+		for (let i = 0; i < keys.length; i++) {
+			record[keys[i]] = results[i];
+		}
+		return record;
+	}
+
+	/** Write multiple JSON values in parallel. */
+	async putManyJSON(entries: Record<string, T>, options?: KVPutOptions): Promise<void> {
+		await Promise.all(
+			Object.entries(entries).map(([key, value]) => this.putJSON(key, value, options))
+		);
+	}
+
+	/** List all keys matching the given prefix, handling pagination automatically. */
+	async listWithPrefix(prefix: string): Promise<string[]> {
+		const keys: string[] = [];
+		let cursor: string | undefined;
+		let list_complete = false;
+
+		while (!list_complete) {
+			const result = await this.kv.list({ prefix, cursor });
+			keys.push(...result.keys.map((k) => k.name));
+			list_complete = result.list_complete;
+			if (!list_complete) {
+				cursor = (result as { cursor?: string }).cursor;
+			}
+		}
+
+		return keys;
 	}
 
 	/** Access the underlying binding directly for anything these helpers don't cover. */
