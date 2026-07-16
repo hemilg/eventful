@@ -37,6 +37,16 @@ export class D1Client {
 		return stmt.run();
 	}
 
+	/** Prepare a query statement for use with `batch()` or standalone execution. */
+	prepare(query: string): D1PreparedStatement {
+		return this.db.prepare(query);
+	}
+
+	/** Execute multiple prepared statements atomically (or near-atomically on D1). */
+	async batch(statements: D1PreparedStatement[]): Promise<D1Result[]> {
+		return this.db.batch(statements);
+	}
+
 	/** Access the underlying binding directly for anything these helpers don't cover. */
 	get raw(): D1Database {
 		return this.db;
