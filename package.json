@@ -26,6 +26,9 @@
 		"deploy": "bun run build && wrangler deploy",
 		"cf-typegen": "wrangler types ./src/worker-configuration.d.ts"
 	},
+	"peerDependencies": {
+		"svelte": "^5.28.2"
+	},
 	"devDependencies": {
 		"@sveltejs/adapter-cloudflare": "^7.1.0",
 		"@sveltejs/kit": "^2.22.0",
