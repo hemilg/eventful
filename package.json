@@ -27,6 +27,10 @@
 		"deploy": "bun run build && wrangler deploy",
 		"cf-typegen": "wrangler types ./src/worker-configuration.d.ts"
 	},
+	"dependencies": {
+		"@trpc/server": "^11.18.0",
+		"zod": "^3.25.76"
+	},
 	"peerDependencies": {
 		"svelte": "^5.28.2"
 	},
