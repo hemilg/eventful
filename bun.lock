@@ -19,6 +19,9 @@
         "vite": "^7.0.4",
         "wrangler": "^4.25.0",
       },
+      "peerDependencies": {
+        "svelte": "^5.28.2",
+      },
     },
   },
   "packages": {

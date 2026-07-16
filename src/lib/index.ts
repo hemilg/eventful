@@ -8,6 +8,7 @@ export { D1Client, KVClient } from './db.js';
 export type { KVPutOptions } from './db.js';
 
 export { default as Timeline } from './components/Timeline.svelte';
+export { default as Gantt } from './components/Gantt.svelte';
 
 // EventStore: strongly-typed data persistence with tRPC
 export { eventStoreRouter } from './store/router.js';
