@@ -5,6 +5,14 @@
 	"type": "module",
 	"license": "MIT",
 	"description": "A reusable event-planning toolkit for SvelteKit + Cloudflare: animatable SVG schedule/timeline UI, a generic event data model, and thin D1/KV client helpers.",
+	"svelte": "./src/lib/index.ts",
+	"exports": {
+		".": {
+			"types": "./src/lib/index.ts",
+			"svelte": "./src/lib/index.ts",
+			"default": "./src/lib/index.ts"
+		}
+	},
 	"scripts": {
 		"dev": "vite dev",
 		"build": "vite build",
