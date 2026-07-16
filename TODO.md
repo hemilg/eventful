@@ -13,3 +13,4 @@
 (D) Add scrubbing UI (drag/slider) on top of Timeline's existing `now` override support +visualization @code
 (D) Consider exposing themeable CSS custom properties more formally (currently ad hoc `--eventful-*` vars in Timeline) +design @code
 (D) Evaluate whether EventLocation needs richer geo helpers (distance, bounding box) once a real consumer needs them +types @research
+(D) Explore cross-framework reach via Svelte custom elements (`customElement: true` compiler option) — Timeline/Gantt could export as web components for use in React, Vue, etc., but this trades away SSR safety (shadow DOM is invisible until JS loads) for interop; defer until there's an actual non-Svelte consumer +interop @research
