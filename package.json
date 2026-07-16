@@ -25,7 +25,8 @@
 		"lint": "prettier --check .",
 		"package": "svelte-kit sync && svelte-package",
 		"deploy": "bun run build && wrangler deploy",
-		"cf-typegen": "wrangler types ./src/worker-configuration.d.ts"
+		"cf-typegen": "wrangler types ./src/worker-configuration.d.ts",
+		"init": "bun run scripts/init.ts"
 	},
 	"peerDependencies": {
 		"svelte": "^5.28.2"
