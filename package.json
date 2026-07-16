@@ -1,0 +1,36 @@
+{
+	"name": "eventful",
+	"private": false,
+	"version": "0.0.1",
+	"type": "module",
+	"license": "MIT",
+	"description": "A reusable event-planning toolkit for SvelteKit + Cloudflare: animatable SVG schedule/timeline UI, a generic event data model, and thin D1/KV client helpers.",
+	"scripts": {
+		"dev": "vite dev",
+		"build": "vite build",
+		"preview": "bun run build && wrangler dev",
+		"prepare": "svelte-kit sync || echo ''",
+		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
+		"format": "prettier --write .",
+		"lint": "prettier --check .",
+		"package": "svelte-kit sync && svelte-package",
+		"deploy": "bun run build && wrangler deploy",
+		"cf-typegen": "wrangler types ./src/worker-configuration.d.ts"
+	},
+	"devDependencies": {
+		"@sveltejs/adapter-cloudflare": "^7.1.0",
+		"@sveltejs/kit": "^2.22.0",
+		"@sveltejs/package": "^2.3.0",
+		"@sveltejs/vite-plugin-svelte": "^6.0.0",
+		"@tailwindcss/vite": "^4.0.0",
+		"prettier": "^3.4.2",
+		"prettier-plugin-svelte": "^3.3.3",
+		"svelte": "^5.28.2",
+		"svelte-check": "^4.0.0",
+		"tailwindcss": "^4.0.0",
+		"typescript": "^5.0.0",
+		"vite": "^7.0.4",
+		"wrangler": "^4.25.0"
+	}
+}
