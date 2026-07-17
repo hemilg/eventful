@@ -1,16 +1,18 @@
-(A) 2026-07-16 Merge project skeleton (package.json, svelte.config.js, wrangler.jsonc, app shell, demo page) with src/lib scaffolding, resolve any conflicts +setup @git seq:1
-(A) 2026-07-16 Confirm @cloudflare/workers-types is wired into tsconfig so D1Client/KVClient ambient types resolve, then run a full svelte-check/tsc pass +setup @code seq:2
-(A) 2026-07-16 Wire demo page to actually render Timeline against sample EventData to validate the component end-to-end +demo @code seq:3
-(B) 2026-07-16 Build day-by-day Gantt/calendar-style schedule visualization component (deferred from Timeline work) +visualization @code seq:4
-(B) 2026-07-16 Add more thorough D1 client features: batching helper (db.batch), transaction-style multi-statement helpers +db @code seq:5
-(B) 2026-07-16 Add more thorough KV client features: bulk get/put helpers, list-with-prefix helper +db @code seq:6
-(B) 2026-07-16 Write interactive bun run init provisioning wizard: walks a new user through creating their own D1 database, KV namespace, R2 bucket via wrangler CLI calls, warns before any resource-creating/billing-relevant command runs, plain script (no compiled binary) +init @code seq:7
-(B) 2026-07-16 Add unit tests for Timeline's current-block detection and fraction math (Vitest) +testing @testing seq:8
-(C) 2026-07-16 Add basic tests/harness for D1Client/KVClient against Miniflare or wrangler's local D1/KV emulation +testing @testing seq:9
-(C) 2026-07-16 Write publishing/consumption docs: how another SvelteKit app adds eventful as a git dependency, what it exports, how to type the Cloudflare bindings it expects +docs @docs seq:10
-(C) 2026-07-16 Document clearly that consuming apps (e.g. the trips platform) own their own app-specific D1 schema/migrations; eventful never bakes in app-specific tables or keys +docs @docs seq:11 adr:001
-(C) 2026-07-16 Add reduced-motion handling to Timeline (respect prefers-reduced-motion, skip/shorten Tween and Spring animations) +accessibility @code seq:12
-(D) 2026-07-16 Add scrubbing UI (drag/slider) on top of Timeline's existing now override support +visualization @code seq:13
-(D) 2026-07-16 Consider exposing themeable CSS custom properties more formally (currently ad hoc --eventful-* vars in Timeline) +design @code seq:14
+x 2026-07-17 2026-07-16 Merge project skeleton (package.json, svelte.config.js, wrangler.jsonc, app shell, demo page) with src/lib scaffolding, resolve any conflicts +setup @git seq:1
+x 2026-07-17 2026-07-16 Confirm @cloudflare/workers-types is wired into tsconfig so D1Client/KVClient ambient types resolve, then run a full svelte-check/tsc pass +setup @code seq:2
+x 2026-07-17 2026-07-16 Wire demo page to actually render Timeline against sample EventData to validate the component end-to-end +demo @code seq:3
+x 2026-07-17 2026-07-16 Build day-by-day Gantt/calendar-style schedule visualization component (deferred from Timeline work) +visualization @code seq:4
+x 2026-07-17 2026-07-16 Add more thorough D1 client features: batching helper (db.batch), transaction-style multi-statement helpers +db @code seq:5
+x 2026-07-17 2026-07-16 Add more thorough KV client features: bulk get/put helpers, list-with-prefix helper +db @code seq:6
+x 2026-07-17 2026-07-16 Write interactive bun run init provisioning wizard: walks a new user through creating their own D1 database, KV namespace, R2 bucket via wrangler CLI calls, warns before any resource-creating/billing-relevant command runs, plain script (no compiled binary) +init @code seq:7
+(A) 2026-07-16 Add unit tests for Timeline's current-block detection and fraction math (Vitest) +testing @testing seq:8
+(A) 2026-07-16 Add basic tests/harness for D1Client/KVClient against Miniflare or wrangler's local D1/KV emulation +testing @testing seq:9
+x 2026-07-17 2026-07-16 Write publishing/consumption docs: how another SvelteKit app adds eventful as a git dependency, what it exports, how to type the Cloudflare bindings it expects +docs @docs seq:10
+x 2026-07-17 2026-07-16 Document clearly that consuming apps (e.g. the trips platform) own their own app-specific D1 schema/migrations; eventful never bakes in app-specific tables or keys +docs @docs seq:11 adr:001
+x 2026-07-17 2026-07-16 Add reduced-motion handling to Timeline (respect prefers-reduced-motion, skip/shorten Tween and Spring animations) +accessibility @code seq:12
+x 2026-07-17 2026-07-16 Add strongly-typed EventStore contract: tRPC router + Zod schemas + D1-backed adapter, so consuming apps get a swappable persistence boundary instead of a hand-rolled API +store @code seq:17
+(B) 2026-07-16 Add vitest coverage for EventStore's D1 adapter (createD1EventStore) against a real D1 binding, following the trips repo's vitest-pool-workers pattern +store @testing seq:18
+(C) 2026-07-16 Add scrubbing UI (drag/slider) on top of Timeline's existing now override support +visualization @code seq:13
+(C) 2026-07-16 Consider exposing themeable CSS custom properties more formally (currently ad hoc --eventful-* vars in Timeline) +design @code seq:14
 (D) 2026-07-16 Evaluate whether EventLocation needs richer geo helpers (distance, bounding box) once a real consumer needs them +types @research seq:15
 (D) 2026-07-16 Explore cross-framework reach via Svelte custom elements (customElement: true compiler option): Timeline/Gantt could export as web components for use in React, Vue, etc, but this trades away SSR safety (shadow DOM is invisible until JS loads) for interop; defer until there's an actual non-Svelte consumer +interop @research seq:16

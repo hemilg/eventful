@@ -5,8 +5,10 @@ A reusable event-planning toolkit for SvelteKit + Cloudflare.
 `eventful` provides:
 
 - A generic, SSR-friendly data model for "an event" - locations, schedule blocks, and participants
-- An animatable SVG UI for visualizing schedules and timelines
-- Thin client wrapper helpers for Cloudflare D1 and KV storage
+- An animatable SVG UI for visualizing schedules and timelines (`Timeline`, `Gantt`)
+- Thin client wrapper helpers for Cloudflare D1 and KV storage, including batch/bulk operations
+- A strongly-typed `EventStore` contract (tRPC + Zod) with a ready-made D1-backed adapter, so
+  consuming apps get a swappable storage boundary instead of hand-rolling their own persistence API
 
 It's designed to be consumed two ways:
 
@@ -46,12 +48,17 @@ import type {
 
 ```svelte
 <script lang="ts">
-	import { Timeline } from 'eventful';
-	// An animated timeline showing the current moment and schedule blocks
+	import { Timeline, Gantt } from 'eventful';
+	// Timeline: an animated "happening now" view of schedule blocks
+	// Gantt: a day-by-day calendar-style visualization of the same schedule
 </script>
 
 <Timeline schedule={blocks} now={currentTime} />
+<Gantt schedule={blocks} />
 ```
+
+`Timeline` respects `prefers-reduced-motion` automatically, skipping/shortening its Tween and
+Spring animations when the user has that preference set.
 
 **Motion helpers** (for custom animations):
 
@@ -70,9 +77,42 @@ import {
 ```typescript
 import { D1Client, KVClient } from 'eventful';
 import type { KVPutOptions } from 'eventful';
-// D1Client: Thin wrapper for Cloudflare D1 (SQLite) database
-// KVClient: Thin wrapper for Cloudflare KV (key-value) storage
+
+const db = new D1Client(platform.env.DB);
+await db.all('SELECT * FROM my_table WHERE id = ?', [1]);
+await db.batch([db.prepare('INSERT INTO t (a) VALUES (1)'), db.prepare('INSERT INTO t (a) VALUES (2)')]);
+
+const kv = new KVClient<MyValue>(platform.env.KV);
+await kv.getManyJSON(['key-a', 'key-b']); // parallel bulk get
+await kv.putManyJSON({ 'key-a': valueA, 'key-b': valueB }); // parallel bulk put
+await kv.listWithPrefix('some-prefix:'); // auto-paginates
 ```
+
+- `D1Client`: thin wrapper for Cloudflare D1, with `all`/`first`/`run` for single queries and
+  `prepare`/`batch` for atomic multi-statement writes.
+- `KVClient`: thin wrapper for Cloudflare KV, with single-key `getJSON`/`putJSON`/`getText`/
+  `putText`/`delete` plus bulk `getManyJSON`/`putManyJSON` and paginated `listWithPrefix`.
+
+**EventStore contract** (strongly-typed, swappable persistence boundary):
+
+```typescript
+import { eventStoreRouter, createD1EventStore } from 'eventful';
+import type { EventStore } from 'eventful';
+
+// D1-backed implementation, ready to use:
+const store: EventStore = createD1EventStore(platform.env.DB);
+
+// Or implement EventStore against any other backend (Postgres, etc) —
+// the interface is just { getEvent(id), saveEvent(id, data) }.
+
+// Mount the tRPC router (Zod-validated getEvent/saveEvent procedures) in your app's API layer:
+const router = eventStoreRouter; // wire into your tRPC context/handler
+```
+
+`createD1EventStore` expects a single `events(id TEXT PRIMARY KEY, data TEXT)` table in your app's
+own D1 database — see the SQL comment at the top of `src/lib/store/d1-adapter.ts` for the exact
+schema to include in your own migrations (eventful never creates this table for you, per the
+"consuming apps own their schema" principle below).
 
 ### Cloudflare bindings in consuming apps
 
@@ -183,6 +223,40 @@ minimal demo/dev target, not a production customer-facing site.
 - Cloudflare Workers via `@sveltejs/adapter-cloudflare`
 - Tailwind CSS v4
 - Bun for package management and scripts
+
+## Project status & roadmap
+
+Current state: the core data model, both visualization components (`Timeline`, `Gantt`),
+Cloudflare storage clients (`D1Client`/`KVClient`, including batch/bulk operations), and the
+`EventStore` contract (tRPC + Zod, with a D1-backed adapter) are built and documented above.
+`bun run check` is clean.
+
+The authoritative, up-to-date task list lives in [`todo.txt`](./todo.txt) (standard
+[todo.txt](https://github.com/todotxt/todo.txt) format: `(priority)` letters, `+project`/
+`@context` tags, `seq:N` for build order, `adr:NNN` cross-referencing architecture decisions
+recorded in the sibling `my-website` repo's `docs/ADR-*.md`). Read that file for the exact,
+current backlog rather than trusting a prose summary to stay in sync — but at a glance:
+
+- **Near-term (testing gap)**: neither `Timeline` nor `D1Client`/`KVClient` have automated test
+  coverage yet (`seq:8`, `seq:9`), nor does the new `EventStore` D1 adapter (`seq:18`). This is
+  the most load-bearing gap — everything else in the library is currently correctness-by-manual-
+  verification only, not test-verified. The sibling `trips` repo (which depends on this library)
+  has an established high-confidence testing pattern worth mirroring here: real edge cases and
+  security/correctness-relevant negative paths via `vitest`, run against real bindings where
+  possible (Miniflare/`@cloudflare/vitest-pool-workers`) rather than mocks.
+- **Polish, not urgent**: a scrubbing/drag UI for `Timeline` (`seq:13`), formalizing the
+  `--eventful-*` CSS custom properties as a real theming API (`seq:14`).
+- **Deferred until a real need exists**: richer `EventLocation` geo helpers like distance/bounding
+  box (`seq:15`) — no consumer needs this yet, adding it speculatively would be premature; and
+  cross-framework reach via Svelte custom elements (`seq:16`), which would let `Timeline`/`Gantt`
+  render inside React/Vue apps as native web components, at the cost of losing SSR safety (shadow
+  DOM content is invisible until JS loads) — explicitly parked until a genuine non-Svelte consumer
+  shows up, since it's a real architectural tradeoff, not a free win.
+- **Not planned / explicitly out of scope**: `eventful` will not grow app-specific schema,
+  authentication, or encryption logic of its own — that's a hard boundary (see the "App-specific
+  schemas and migrations" section above, and `adr:001` in `my-website`). If a future consumer
+  needs something like the `trips` repo's envelope-encryption model, that stays in the consuming
+  app, not here.
 
 ## License
 

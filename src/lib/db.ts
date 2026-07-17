@@ -3,7 +3,7 @@
  *
  * These are NOT an ORM and define no app-specific schema or keys —
  * consuming apps own their own tables/records and build on top of these
- * generic helpers. See TODO.md for planned batching/transaction helpers.
+ * generic helpers.
  */
 
 /**
